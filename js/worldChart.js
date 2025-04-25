@@ -1,0 +1,85 @@
+export default async function worldChart() {
+  const container = document.getElementById("container");
+
+  const margin = { top: 30, right: 100, bottom: 40, left: 50 };
+  const width = container.offsetWidth - margin.left - margin.right;
+  const height = container.offsetHeight - margin.top - margin.bottom;
+
+  const svg = d3.select("#container")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const parseYear = d3.timeParse("%Y");
+
+  const data = d3.range(1961, 2040).map(year => ({
+    year: parseYear(year.toString()),
+    series1: Math.random() * 100,
+    series2: Math.random() * 80,
+    series3: Math.random() * 60,
+    series4: Math.random() * 90,
+  }));
+
+  const x = d3.scaleTime()
+    .domain(d3.extent(data, d => d.year))
+    .range([0, width]);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(data, d => Math.max(d.series1, d.series2, d.series3, d.series4))])
+    .nice()
+    .range([height, 0]);
+
+  const color = d3.scaleOrdinal()
+    .domain(["series1", "series2", "series3", "series4"])
+    .range(["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]);
+
+  g.append("g")
+    .attr("class", "x axis")
+    .attr("transform", `translate(0,${height})`)
+    .call(
+      d3.axisBottom(x)
+        .tickFormat(d3.timeFormat("%Y"))
+        .ticks(d3.timeYear.every(5))
+    );
+
+  g.append("g")
+    .attr("class", "y axis")
+    .call(d3.axisLeft(y));
+
+  const line = d3.line()
+    .x(d => x(d.year))
+    .y(d => y(d.value));
+
+  ["series1", "series2", "series3", "series4"].forEach(name => {
+    const lineData = data.map(d => ({ year: d.year, value: d[name] }));
+
+    g.append("path")
+      .datum(lineData)
+      .attr("class", "line")
+      .attr("stroke", color(name))
+      .attr("d", line)
+      .attr("stroke-width", 2)
+      .attr("fill", "none")   ;
+  });
+
+  const legend = g.selectAll(".legend")
+    .data(color.domain())
+    .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", (d, i) => `translate(${width + 10},${i * 20})`);
+
+  legend.append("rect")
+    .attr("x", 0)
+    .attr("width", 12)
+    .attr("height", 12)
+    .style("fill", color);
+
+  legend.append("text")
+    .attr("x", 18)
+    .attr("y", 6)
+    .attr("dy", "0.35em")
+    .text(d => d);
+}

@@ -1,3 +1,5 @@
+import Legend from "./d3-legend.js";
+
 export default async function drawChroplath() {
   // Set dimensions
   const container = document.getElementById("container");
@@ -12,23 +14,39 @@ export default async function drawChroplath() {
     .attr("height", height);
 
 // Define a projection and path generator
-  const projection = d3.geoMercator()
-    .scale(150)
-    .translate([width / 2, height / 1.5]);
+  const projection = d3.geoEqualEarth()
+    .fitExtent([[0, 0], [width, height]], {type: "Sphere"});
 
   const path = d3.geoPath().projection(projection);
 
 // Define a color scale
-  const colorScale = d3.scaleSequential(d3.interpolateBlues)
-    .domain([0, 100]); // Adjust domain based on data
+  const colorScale =  d3.scaleDiverging(t => {
+    if (t === 0.5) return "white";
+    if (t < 0.5) return d3.interpolateRgb("darkred", "white")(t * 2);
+    return d3.interpolateRgb("white", "green")((t - 0.5) * 2);
+  })
+    .domain([-4, 0, 4])
+    .clamp(true); // Clamp to prevent going beyond red/green
+
+  // d3.scaleThreshold([-4, -2, 0, 2, 4], d3.schemeRdGr[9])
+
+  console.log("colorScale", colorScale());
+  Legend({
+    color: colorScale,
+    title: "Population Growth in %",
+    // tickFormat: "+%"
+  })
+
 
   const tooltip = d3.select("#tooltip");
 
-  await getData();
+  const population = await getData();
+  console.log("population", population);
 // Load GeoJSON or TopoJSON data
-  d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world => {
+  d3.json("./js/countries-50m.json").then(world => {
     const countries = topojson.feature(world, world.objects.countries).features;
 
+    console.log(countries);
     // **Extract country names from available data**
     let countryNames = new Map(
       countries.map(d => [d.id, d.properties.name || "Unknown"])
@@ -39,7 +57,12 @@ export default async function drawChroplath() {
       .data(countries)
       .enter().append("path")
       .attr("d", path)
-      .attr("fill", d => colorScale(Math.random() * 100)) // Assign random colors
+      .attr("fill", d => {
+        const name = countryNames.get(d.id) || "Unknown";
+        const countryPopulation = population.get(name) || {}
+        console.log(name, countryPopulation, +((parseFloat(countryPopulation.growth) / 100).toFixed(2)));
+        return colorScale(+countryPopulation.growth);
+      }) // Assign random colors
       .attr("stroke", "#fff")
       .on("mouseover", function(event, d) {
         d3.select(this)
@@ -48,10 +71,11 @@ export default async function drawChroplath() {
           .attr("stroke-dasharray", "4,2");
 
         const name = countryNames.get(d.id) || "Unknown";
-        console.log(name);
+        // console.log(name);
+        const countryPopulation = population.get(name) || {}
         tooltip
           .style("display", "block")
-          .html(`<strong>${name}</strong>`);
+          .html(`<strong>${name}: ${countryPopulation.growth}</strong>`);
       })
       .on("mousemove", function(event) {
         tooltip
@@ -88,5 +112,9 @@ export default async function drawChroplath() {
 
 async function getData() {
   const population =  await d3.csv("./data/population_growth.csv");
-  return population.map(d => ({countryCode: d["Country Code"], countryName: d["Country Name"], growth: d["2023"]}));
+  const populationMap = new Map();
+  for (const countryPop of population) {
+    populationMap.set(countryPop["Country Name"], {countryCode: countryPop["Country Code"], countryName: countryPop["Country Name"], growth: countryPop["2023"]});
+  }
+  return populationMap;
 }
