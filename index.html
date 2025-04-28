@@ -10,6 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/d3-svg-legend@2.25.6/d3-legend.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <script type="module" src="./js/main.js" defer></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body class="dark:bg-gray-800 dark:text-white p-0">
     <!-- Top Nav -->
@@ -26,15 +31,15 @@
         </div>
         <nav class="p-4 space-y-2" id="navigation-bar">
             <a href="#map" class="block hover:bg-gray-700 p-2 rounded" id="home">Home</a>
-            <a href="#worldPopulationGrowthChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-1">World Poulation Chart</a>
-            <a href="#worldPopulationRateChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-2">World Poulation Rate per 1000</a>
-            <a href="#top10Comparison" class="block hover:bg-gray-700 p-2 rounded">Top 10 Populated Countries Comparison</a> <!-- 🚀 new button -->
+            <a href="#worldPopulationGrowthChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-1">Global Poulation Chart</a>
+            <a href="#worldPopulationRateChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-2">Global Poulation Rate per 100</a>
+            <a href="#top10Comparison" class="block hover:bg-gray-700 p-2 rounded" id="nav-3">Top 10 Populated Countries Comparison</a> <!-- 🚀 new button -->
         </nav>
     </div>
     <!-- Overlay -->
     <div id="overlay" class="hidden fixed inset-0 bg-white opacity-50 z-40"></div>
     <div id="container" class="m-auto w-[96vw] h-[80vh]"></div>
-    <div id="tooltip" style="position: absolute; display: none; background: black; border: 1px solid #ccc; padding: 5px; font-size: 12px; pointer-events: none;"></div>
+    <div id="tooltip" style="position: absolute; display: none; background: rgba(0, 0, 0, 0.7); border: 1px solid #ccc; padding: 5px; font-size: 12px; pointer-events: none;"></div>
     <script>
       const toggleBtn = document.getElementById("menu-toggle");
       const closeBtn = document.getElementById("close-sidebar");

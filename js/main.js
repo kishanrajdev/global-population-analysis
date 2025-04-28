@@ -32,16 +32,22 @@ function loadPage() {
 
     link2.href = "#country-birth-death-rate-chart?country=" + params.get("country");   // change href
     link2.textContent = `${params.get("country")}'s Population rate chart`;
+
+    document.getElementById("nav-3").classList.add("hidden");
+
   } else {
     const link = document.getElementById("nav-1");
 
     link.href = "#worldPopulationGrowthChart";   // change href
-    link.textContent = `World Poulation Chart`;
+    link.textContent = `Global Poulation Chart`;
 
     const link2 = document.getElementById("nav-2");
 
     link2.href = "#worldPopulationRate";   // change href
-    link2.textContent = `World Poulation Rate per 1000`;
+    link2.textContent = `Global Poulation Rate per 100`;
+
+    document.getElementById("nav-3").classList.remove("hidden");
+
   }
 
   const nav = document.getElementById("navigation-bar");

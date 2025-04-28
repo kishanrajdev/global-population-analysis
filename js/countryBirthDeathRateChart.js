@@ -112,34 +112,60 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
 
   seriesKeys.forEach(name => {
     const lineData = data.map(d => ({year: d.year, value: d[name]}));
-    g.append("path")
+    const path = g.append("path")
       .datum(lineData)
       .attr("class", "line")
       .attr("stroke", color(name))
       .attr("fill", "none")
       .attr("stroke-width", "2")
-      .attr("d", line);
+      .attr("d", line)
+      .on("mouseover", function(event) {
+        d3.select(this).attr("stroke-width", "4"); // Highlight the line
+        tooltip.style("opacity", 1);
+      })
+      .on("mousemove", function(event) {
+        const [mouseX] = d3.pointer(event);
+        const x0 = x.invert(mouseX);
+        const bisect = d3.bisector(d => d.year).left;
+        const idx = bisect(lineData, x0, 1);
+        const d0 = lineData[idx - 1];
+        const d1 = lineData[idx];
+        const d = x0 - d0?.year > d1?.year - x0 ? d1 : d0;
+
+        if (d) {
+          tooltip
+            .html(`
+            <div><strong>${labels[name]}</strong></div>
+            <div>Year: ${d.year.getFullYear()}</div>
+            <div>Value: ${d.value.toLocaleString()}</div>
+          `)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 20) + "px")
+            .style("opacity", 1);
+        }
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("stroke-width", "2"); // Remove highlight
+        tooltip.style("opacity", 0);
+      });
+
+    // Transition animation
+    const totalLength = path.node().getTotalLength();
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(2000)
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0);
   });
 
-//   const legend = g.selectAll(".legend")
-//     .data(color.domain())
-//     .enter().append("g")
-//     .attr("class", "legend")
-//     .attr("transform", (d, i) => `translate(${width - 60},${i * 20})`);
-//
-//   legend.append("rect")
-//     .attr("x", 0)
-//     .attr("width", 12)
-//     .attr("height", 12)
-//     .style("fill", color);
-//
-//   legend.append("text")
-//     .attr("x", 18)
-//     .attr("y", 6)
-//     .attr("dy", "0.35em")
-//     .attr("fill", "white")
-//     .text(d => labels[d]);
-// }
+  // Create the tooltip
+  const tooltip = d3.select("#container")
+    .append("div")
+    .attr("class", "absolute text-xs p-2 rounded shadow opacity-0 pointer-events-none")
+    .style("background", "rgba(0, 0, 0, 0.7)")
+    .style("position", "absolute");
 
 // Add a group for the legend BELOW the chart
   const legend = svg.append("g")

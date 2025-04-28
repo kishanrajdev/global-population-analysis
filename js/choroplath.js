@@ -75,7 +75,7 @@ export default async function drawChroplath() {
         const countryPopulation = population.get(name) || {}
         tooltip
           .style("display", "block")
-          .html(`<strong>${name}: ${countryPopulation.growth}</strong>`);
+          .html(`<strong>${name}: ${parseFloat(countryPopulation.growth).toFixed(3)}</strong>`);
       })
       .on("mousemove", function(event) {
         tooltip

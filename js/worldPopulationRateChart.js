@@ -116,13 +116,55 @@ export default async function worldPopulationRateChart() {
 
   seriesKeys.forEach(name => {
     const lineData = data.map(d => ({year: d.year, value: d[name]}));
-    g.append("path")
+
+    const path = g.append("path")
       .datum(lineData)
       .attr("class", "line")
       .attr("stroke", color(name))
       .attr("fill", "none")
       .attr("stroke-width", "2")
-      .attr("d", line);
+      .attr("d", line)
+      .on("mouseover", function(event) {
+        const [mouseX] = d3.pointer(event);
+        const x0 = x.invert(mouseX);
+        const bisect = d3.bisector(d => d.year).left;
+        const idx = bisect(lineData, x0, 1);
+        const d0 = lineData[idx - 1];
+        const d1 = lineData[idx];
+        const d = x0 - d0?.year > d1?.year - x0 ? d1 : d0;
+        if (d) {
+          tooltip
+            .html(`<strong>${labels[name]}</strong><br/>Year: ${d.year.getFullYear()}<br/>Value: ${d.value.toFixed(3)}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 20) + "px")
+            .classed("hidden", false);
+
+          d3.select(this)
+            .style("stroke-width", "4"); // Make line even thicker on hover if you want
+        }
+      })
+      .on("mousemove", function(event) {
+        tooltip
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 20) + "px");
+      })
+      .on("mouseout", function() {
+        tooltip.classed("hidden", true);
+
+        d3.select(this)
+          .style("stroke-width", "2"); // Revert back
+      });
+
+    // Animate the line drawing
+    const totalLength = path.node().getTotalLength();
+
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(2000) // Animation duration (2 seconds)
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0);
   });
 
 // Add a group for the legend BELOW the chart
@@ -148,4 +190,12 @@ export default async function worldPopulationRateChart() {
       .style("fill", "#fff")
       .text(labels[key]);
   });
+
+  // Create a tooltip div
+  const tooltip = d3.select("#container")
+    .append("div")
+    .attr("class", "absolute text-xs p-2 rounded shadow-lg hidden")
+    .style("background", "rgba(0, 0, 0, 0.7)")
+  ;
+
 }
