@@ -1,8 +1,8 @@
-const processData = (countryName, data, predictions) => {
+const processData = (countryName, data, predictions, type ="") => {
   const countryData = data.find(d => d["Country Name"].toLowerCase() === countryName.toLowerCase());
   if (!countryData) return [];
 
-  const processedData = Object.entries(countryData)
+  let processedData = Object.entries(countryData)
     .filter(([k]) => !["Country Name", "Country Code"].includes(k))
     .map(([year, value]) => {
       return {
@@ -18,6 +18,19 @@ const processData = (countryName, data, predictions) => {
     processedData.push({year: startYear++, value: prediction});
   }
 
+  if (type !== "total") {
+    processedData = processedData.map(d => ({...d, value: d.value / 10}));
+  } else {
+    processedData = processedData.map((d, i, arr) => {
+      if (i === 0) {
+        return { year: d.year, value: 0 }; // no change for the first year
+      }
+      const prev = arr[i - 1].value;
+      const change = ((d.value - prev) / prev) * 100;
+      return { year: d.year, value: change };
+    })
+  }
+  processedData = processedData.filter((d) => d.year > 1961);
   return processedData;
 };
 
@@ -36,18 +49,9 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
     files.map(file => d3.csv(`./data/${file}`))
   );
 
-  let seriesTotal = processData(countryName, total, apiData.predictions.population);
+  const seriesTotal = processData(countryName, total, apiData.predictions.population, "total");
   const seriesBirthRate = processData(countryName, birthrate, apiData.predictions.birth_rate);
   const seriesDeathRate = processData(countryName, deathrate, apiData.predictions.death_rate);
-
-  seriesTotal = seriesTotal.map((d, i, arr) => {
-    if (i === 0) {
-      return { year: d.year, value: 0 }; // no change for the first year
-    }
-    const prev = arr[i - 1].value;
-    const change = ((d.value - prev) / prev) * 1000;
-    return { year: d.year, value: change };
-  });
 
   const parseYear = d3.timeParse("%Y");
 

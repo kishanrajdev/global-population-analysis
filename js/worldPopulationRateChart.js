@@ -1,23 +1,24 @@
-const processData = (countryName, data, predictions) => {
-  const countryData = data.find(d => d["Country Name"].toLowerCase() === countryName.toLowerCase());
-  if (!countryData) return [];
-
-  const processedData = Object.entries(countryData)
-    .filter(([k]) => !["Country Name", "Country Code"].includes(k))
-    .map(([year, value]) => {
-      return {
-        year: +year,
-        value: +value
-      }
-    })
-    .filter(c => !!c.year && c.year < 2023)
-    .sort((a, b) => a.year - b.year);
+const processData = (data, predictions, type = "") => {
+  let processedData = data.sort((a, b) => a.year - b.year).filter(d => d.year < 2023);
 
   let startYear = 2023
   for (const prediction of predictions) {
-    processedData.push({year: startYear++, value: prediction});
+    processedData.push({year: startYear++, value: type === "total" ? parseInt(prediction) : prediction });
   }
 
+  if (type !== "total") {
+    processedData = processedData.map(d => ({...d, value: d.value / 10}));
+  } else {
+    processedData = processedData.map((d, i, arr) => {
+      if (i === 0) {
+        return { year: d.year, value: 0 }; // no change for the first year
+      }
+      const prev = arr[i - 1].value;
+      const change = ((d.value - prev) / prev) * 100;
+      return { year: d.year, value: change };
+    })
+  }
+  processedData = processedData.filter((d) => d.year > 1961);
   return processedData;
 };
 
@@ -33,21 +34,28 @@ export default async function worldPopulationRateChart() {
     "population_death.csv"
   ];
   const [total, birthrate, deathrate] = await Promise.all(
-    files.map(file => d3.csv(`./data/${file}`))
+    files.map(file => d3.csv(`./data/${file}`)
+      .then(data => {
+          let year = 1960
+          const arr = []
+          let total = 0;
+          while (year < 2024) {
+            if (data[0]["Indicator Code"] === "SP.POP.TOTL") {
+              total = d3.sum(data, d => isNaN(+d[year]) ? 0 : +d[year]);
+            } else {
+              total = d3.mean(data, d => isNaN(+d[year]) ? 0 : +d[year]);
+            }
+            arr.push({year: +year, value: total});
+            year++;
+          }
+          return arr
+      })
+    )
   );
 
-  let seriesTotal = processData(countryName, total, apiData.predictions.population);
-  const seriesBirthRate = processData(countryName, birthrate, apiData.predictions.birth_rate);
-  const seriesDeathRate = processData(countryName, deathrate, apiData.predictions.death_rate);
-
-  seriesTotal = seriesTotal.map((d, i, arr) => {
-    if (i === 0) {
-      return { year: d.year, value: 0 }; // no change for the first year
-    }
-    const prev = arr[i - 1].value;
-    const change = ((d.value - prev) / prev) * 1000;
-    return { year: d.year, value: change };
-  });
+  let seriesTotal = processData(total, apiData.predictions.population, "total");
+  const seriesBirthRate = processData(birthrate, apiData.predictions.birth_rate);
+  const seriesDeathRate = processData(deathrate, apiData.predictions.death_rate);
 
   const parseYear = d3.timeParse("%Y");
 

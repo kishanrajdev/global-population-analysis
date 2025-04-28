@@ -15,6 +15,41 @@ function loadPage() {
   if (route === "map") {   drawChroplath(); }
   if (route === "countryChart") countryChart(params.get("country"));
   if (route === "country-birth-death-rate-chart") drawCountryBirthDeathRateChart(params.get("country"))
-  if (route === "world") worldChart();
+  if (route === "worldPopulationGrowthChart") worldChart();
   if (route === "worldPopulationRate") worldPopulationRateChart(params.get("country"));
+
+  if (route === "countryChart" || route === "country-birth-death-rate-chart") {
+    const link = document.getElementById("nav-1");
+
+    link.href = "#countryChart?country=" + params.get("country");   // change href
+    link.textContent = `${params.get("country")}'s Total Population Chart`;
+
+    const link2 = document.getElementById("nav-2");
+
+    link2.href = "#country-birth-death-rate-chart?country=" + params.get("country");   // change href
+    link2.textContent = `${params.get("country")}'s Population rate chart`;
+  } else {
+    const link = document.getElementById("nav-1");
+
+    link.href = "#worldPopulationGrowthChart";   // change href
+    link.textContent = `World Poulation Chart`;
+
+    const link2 = document.getElementById("nav-2");
+
+    link2.href = "#worldPopulationRate";   // change href
+    link2.textContent = `World Poulation Rate per 1000`;
+  }
+
+  const nav = document.getElementById("navigation-bar");
+  const links = nav.querySelectorAll("a");
+  const currentHash = window.location.hash;
+
+  links.forEach(link => {
+    if (link.getAttribute("href").includes(route)) {
+      link.classList.add("text-yellow-400");   // add yellow from Tailwind
+    } else {
+      link.classList.remove("text-yellow-400"); // remove yellow if not match
+    }
+  });
+
 }

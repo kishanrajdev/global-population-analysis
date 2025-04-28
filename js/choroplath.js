@@ -91,7 +91,7 @@ export default async function drawChroplath() {
         tooltip.style("display", "none");
       })
       .on("click", (event, d) => {
-        console.log(d);
+        tooltip.style("display", "none");
         location.hash = `#countryChart?country=${encodeURIComponent(countryNames.get(d.id) || "Unknown")}`;
       })
     ;
