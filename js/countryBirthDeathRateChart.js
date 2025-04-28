@@ -22,7 +22,7 @@ const processData = (countryName, data, predictions, type ="") => {
     processedData = processedData.map(d => ({...d, value: d.value / 10}));
   } else {
     processedData = processedData.map((d, i, arr) => {
-      if (i === 0) {
+      if (i === 0 || d.year === 2023) {
         return { year: d.year, value: 0 }; // no change for the first year
       }
       const prev = arr[i - 1].value;
@@ -89,8 +89,11 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
     .domain(d3.extent(data, d => d.year))
     .range([0, width]);
 
+  const yMin = d3.min(data, d => Math.min(d.total, d.birthrate, d.deathrate));
+  const yMax = d3.max(data, d => Math.max(d.total, d.birthrate, d.deathrate));
+
   const y = d3.scaleLinear()
-    .domain([0, d3.max(data, d => Math.max(d.total, d.birthrate, d.deathrate))])
+    .domain([Math.min(0, yMin), yMax])
     .nice()
     .range([height, 0]);
 
