@@ -28,6 +28,7 @@
             <a href="#map" class="block hover:bg-gray-700 p-2 rounded" id="home">Home</a>
             <a href="#worldPopulationGrowthChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-1">World Poulation Chart</a>
             <a href="#worldPopulationRateChart" class="block hover:bg-gray-700 p-2 rounded" id="nav-2">World Poulation Rate per 1000</a>
+            <a href="#top10Comparison" class="block hover:bg-gray-700 p-2 rounded">Top 10 Populated Countries Comparison</a> <!-- 🚀 new button -->
         </nav>
     </div>
     <!-- Overlay -->
@@ -53,6 +54,13 @@
       toggleBtn.addEventListener("click", openSidebar);
       closeBtn.addEventListener("click", closeSidebar);
       overlay.addEventListener("click", closeSidebar);
+
+      // 🚀 Bonus: Close sidebar when clicking a link
+      document.querySelectorAll("#sidebar a").forEach(link => {
+        link.addEventListener("click", () => {
+          closeSidebar();
+        });
+      });
     </script>
 
 </body>

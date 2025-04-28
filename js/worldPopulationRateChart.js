@@ -125,26 +125,6 @@ export default async function worldPopulationRateChart() {
       .attr("d", line);
   });
 
-//   const legend = g.selectAll(".legend")
-//     .data(color.domain())
-//     .enter().append("g")
-//     .attr("class", "legend")
-//     .attr("transform", (d, i) => `translate(${width - 60},${i * 20})`);
-//
-//   legend.append("rect")
-//     .attr("x", 0)
-//     .attr("width", 12)
-//     .attr("height", 12)
-//     .style("fill", color);
-//
-//   legend.append("text")
-//     .attr("x", 18)
-//     .attr("y", 6)
-//     .attr("dy", "0.35em")
-//     .attr("fill", "white")
-//     .text(d => labels[d]);
-// }
-
 // Add a group for the legend BELOW the chart
   const legend = svg.append("g")
     .attr("class", "legend")
