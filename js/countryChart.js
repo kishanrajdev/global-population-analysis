@@ -67,7 +67,7 @@ export default async function drawCountryChart(countryName) {
     age65: "Age 65+"
   };
 
-  document.getElementById("pageTitle").textContent =  countryName + "'s Population Chart";
+  document.getElementById("pageTitle").textContent =  countryName + " Population Chart";
 
   const container = document.getElementById("container");
   container.innerHTML = "";

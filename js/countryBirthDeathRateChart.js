@@ -69,7 +69,7 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
     deathrate: "Death rate"
   };
 
-  document.getElementById("pageTitle").textContent = countryName+ "'s Poulation Rate Chart";
+  document.getElementById("pageTitle").textContent = countryName+ " Poulation Rate Chart";
   const container = document.getElementById("container");
   container.innerHTML = "";
 
