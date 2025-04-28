@@ -18,16 +18,18 @@
 </head>
 <body class="dark:bg-gray-800 dark:text-white p-0">
     <!-- Top Nav -->
-    <header class="m-auto w-[96vw] h-[12vh]">
-        <button id="menu-toggle" class="text-2xl focus:outline-none p-4">
+    <header class="m-auto w-[96vw] h-[12vh] flex items-center justify-center relative">
+        <button id="menu-toggle" class="text-2xl focus:outline-none p-4 absolute left-4 top-1/2 -translate-y-1/2">
             &#9776; <!-- Hamburger icon -->
         </button>
+        <h1 class="text-2xl font-bold" id="pageTitle"></h1>
     </header>
 
     <!-- Sidebar -->
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white transform -translate-x-full transition-transform duration-300 z-50">
         <div class="p-4 flex justify-end">
             <button id="close-sidebar" class="text-xl">&times;</button>
+
         </div>
         <nav class="p-4 space-y-2" id="navigation-bar">
             <a href="#map" class="block hover:bg-gray-700 p-2 rounded" id="home">Home</a>

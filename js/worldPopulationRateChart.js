@@ -73,6 +73,7 @@ export default async function worldPopulationRateChart() {
     deathrate: "Death rate"
   };
 
+  document.getElementById("pageTitle").textContent = "Global Poulation Rate per 100";
   const container = document.getElementById("container");
   container.innerHTML = "";
 
@@ -104,10 +105,12 @@ export default async function worldPopulationRateChart() {
   g.append("g")
     .attr("class", "x axis")
     .attr("transform", `translate(0,${height})`)
+    .attr("class", "text-sm")
     .call(d3.axisBottom(x).ticks(10));
 
   g.append("g")
     .attr("class", "y axis")
+    .attr("class", "text-sm")
     .call(d3.axisLeft(y));
 
   const line = d3.line()
@@ -186,7 +189,7 @@ export default async function worldPopulationRateChart() {
       .attr("x", 18)
       .attr("y", 6)
       .attr("dy", "0.35em")
-      .style("font-size", "12px")
+      .style("font-size", "14px")
       .style("fill", "#fff")
       .text(labels[key]);
   });

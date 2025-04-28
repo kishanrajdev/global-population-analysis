@@ -7,6 +7,8 @@ export default async function drawChroplath() {
   const height = container.offsetHeight;
   // const width = 1000, height = 600;
 
+  document.getElementById("pageTitle").textContent = "";
+
 // Create an SVG container
   const svg = d3.select("#container")
     .append("svg")
@@ -41,7 +43,6 @@ export default async function drawChroplath() {
   const tooltip = d3.select("#tooltip");
 
   const population = await getData();
-  console.log("population", population);
 // Load GeoJSON or TopoJSON data
   d3.json("./js/countries-50m.json").then(world => {
     const countries = topojson.feature(world, world.objects.countries).features;

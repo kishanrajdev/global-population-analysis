@@ -67,10 +67,12 @@ export default async function drawCountryChart(countryName) {
     age65: "Age 65+"
   };
 
+  document.getElementById("pageTitle").textContent =  countryName + "'s Population Chart";
+
   const container = document.getElementById("container");
   container.innerHTML = "";
 
-  const margin = {top: 30, right: 100, bottom: 40, left: 100};
+  const margin = {top: 30, right: 120, bottom: 40, left: 120};
   const width = container.offsetWidth - margin.left - margin.right;
   const height = container.offsetHeight - margin.top - margin.bottom;
 
@@ -99,10 +101,12 @@ export default async function drawCountryChart(countryName) {
   g.append("g")
     .attr("class", "x axis")
     .attr("transform", `translate(0,${height})`)
+    .attr("class", "text-sm")
     .call(d3.axisBottom(x).ticks(10));
 
   g.append("g")
     .attr("class", "y axis")
+    .attr("class", "text-sm")
     .call(d3.axisLeft(y));
 
   // Create the tooltip
@@ -186,7 +190,7 @@ export default async function drawCountryChart(countryName) {
       .attr("x", 18)
       .attr("y", 6)
       .attr("dy", "0.35em")
-      .style("font-size", "12px")
+      .style("font-size", "14px")
       .style("fill", "#fff")
       .text(labels[key]);
   });

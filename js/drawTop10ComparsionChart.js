@@ -1,6 +1,7 @@
 export default async function drawTop10ComparisonChart() {
   const container = document.getElementById("container");
   container.innerHTML = "";
+  document.getElementById("pageTitle").textContent = "Vertical Population Distribution by Age Group (2023)";
 
   const margin = { top: 100, right: 100, bottom: 160, left: 120 };
   const width = window.innerWidth - margin.left - margin.right;
@@ -219,15 +220,6 @@ export default async function drawTop10ComparisonChart() {
     .attr("font-weight", "bold")
     .attr("fill", "white");
 
-  // Title
-  svg.append("text")
-    .attr("x", width / 2)
-    .attr("y", -40)
-    .attr("text-anchor", "middle")
-    .style("font-size", "26px")
-    .style("font-weight", "bold")
-    .style("fill", "white")
-    .text("Vertical Population Distribution by Age Group (2023)");
 
   // Legend
   const legend = svg.append("g")
