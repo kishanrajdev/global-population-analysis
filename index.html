@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Global Population Analysis</title>
-    <link href="./styles/main.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="http://d3js.org/d3.v7.js"></script>
-    <script src="https://unpkg.com/topojson@3"></script>
-    <script type="module" src="./js/main.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Global Population Map</title>
+  <link href="./styles/main.css" rel="stylesheet" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <script type="module" src="./js/main.js" defer></script>
 </head>
-<body class="dark:bg-gray-800 dark:text-white p-0">
-    <div id="container" style="width: 100%; height: 660px;" ></div>
-    <div id="tooltip" style="position: absolute; display: none; background: black; border: 1px solid #ccc; padding: 5px; font-size: 12px; pointer-events: none;"></div>
+<body class="bg-gray-100 text-black">
+  <h1 style="text-align: center; font-size: 24px; margin: 10px 0;">Global Population Map</h1>
+  <div id="container" style="width: 100vw; height: 90vh; overflow: hidden;"></div>
+  <div id="tooltip" style="position: absolute; display: none; background: black; color: white; padding: 6px; font-size: 14px; pointer-events: none; border-radius: 4px;"></div>
 </body>
 </html>

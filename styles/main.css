@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  #container svg {
+    display: block;
+  }
+  
+  .back-button {
+    font-size: 14px;
+  }
+  

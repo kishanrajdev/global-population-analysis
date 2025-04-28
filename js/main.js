@@ -1,16 +1,25 @@
-import drawChroplath from "./choroplath.js";
-import countryChart from "./countryChart.js";
+import drawChoroplath from "./choroplath.js";
+import drawCountryChart from "./countryChart.js";
 
-window.addEventListener("hashchange", loadPage);
-window.addEventListener("load", loadPage);
+function init() {
+  const hash = window.location.hash;
+  if (hash.startsWith("#countryChart?country=")) {
+    const country = decodeURIComponent(hash.split("=")[1]);
+    drawCountryChart(country);
+  } else {
+    drawChoroplath();
+  }
 
-function loadPage() {
-  console.log('here - ', location.hash);
-  const hash = location.hash.replace("#", "") || "map";
-  const [route, queryString] = hash.split("?");
-  const params = new URLSearchParams(queryString);
-  document.getElementById("container").innerHTML = "";
-  if (route === "map") {   drawChroplath(); }
-  if (route === "countryChart") countryChart(params.get("country"));
-  // if (hash === "compare") loadCompare();
+  window.addEventListener("hashchange", () => {
+    const newHash = window.location.hash;
+    if (newHash.startsWith("#countryChart?country=")) {
+      const country = decodeURIComponent(newHash.split("=")[1]);
+      drawCountryChart(country);
+    } else {
+      document.getElementById("container").innerHTML = "";
+      drawChoroplath();
+    }
+  });
 }
+
+init();
