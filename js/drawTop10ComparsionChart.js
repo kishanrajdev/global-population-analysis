@@ -3,9 +3,11 @@ export default async function drawTop10ComparisonChart() {
   container.innerHTML = "";
   document.getElementById("pageTitle").textContent = "Vertical Population Distribution by Age Group (2023)";
 
-  const margin = { top: 100, right: 100, bottom: 160, left: 120 };
-  const width = window.innerWidth - margin.left - margin.right;
-  const height = window.innerHeight * 0.8 - margin.top - margin.bottom;
+
+  const margin = {top: 30, right: 120, bottom: 100, left: 120};
+  const width = container.offsetWidth - margin.left - margin.right;
+  const height = container.offsetHeight - margin.top - margin.bottom;
+
 
   const svg = d3.select("#container")
     .append("svg")

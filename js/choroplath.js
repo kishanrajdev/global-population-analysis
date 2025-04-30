@@ -32,7 +32,6 @@ export default async function drawChroplath() {
 
   // d3.scaleThreshold([-4, -2, 0, 2, 4], d3.schemeRdGr[9])
 
-  console.log("colorScale", colorScale());
   Legend({
     color: colorScale,
     title: "Population Growth in %",
@@ -61,7 +60,6 @@ export default async function drawChroplath() {
       .attr("fill", d => {
         const name = countryNames.get(d.id) || "Unknown";
         const countryPopulation = population.get(name) || {}
-        console.log(name, countryPopulation, +((parseFloat(countryPopulation.growth) / 100).toFixed(2)));
         return colorScale(+countryPopulation.growth);
       }) // Assign random colors
       .attr("stroke", "#fff")
