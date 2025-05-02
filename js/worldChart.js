@@ -10,15 +10,15 @@ const processData = (data, predictions) => {
   return processedData;
 };
 
-export default async function worldChart(countryName) {
-  const url = `http://127.0.0.1:5000/predict/total_population`;
-
-  const [apiDataAll, apiData0, apiData15, apiData65] = await Promise.all([
-    fetch(`${url}/all/`).then(res => res.json()),
-    fetch(`${url}/0/`).then(res => res.json()),
-    fetch(`${url}/15/`).then(res => res.json()),
-    fetch(`${url}/65/`).then(res => res.json()),
-  ]);
+export default async function worldChart() {
+  // const url = `http://127.0.0.1:5000/predict/total_population`;
+  //
+  // const [apiDataAll, apiData0, apiData15, apiData65] = await Promise.all([
+  //   fetch(`${url}/all/`).then(res => res.json()),
+  //   fetch(`${url}/0/`).then(res => res.json()),
+  //   fetch(`${url}/15/`).then(res => res.json()),
+  //   fetch(`${url}/65/`).then(res => res.json()),
+  // ]);
 
   // Load population CSVs
   const files = [
@@ -42,10 +42,10 @@ export default async function worldChart(countryName) {
     )
   );
 
-  const seriesTotal = processData(total, apiDataAll.predictions);
-  const series0_14 = processData(age0_14, apiData0.predictions);
-  const series15_64 = processData(age15_64, apiData15.predictions);
-  const series65 = processData(age65, apiData65.predictions);
+  const seriesTotal = processData(total, []);
+  const series0_14 = processData(age0_14, []);
+  const series15_64 = processData(age15_64, []);
+  const series65 = processData(age65, []);
 
   const parseYear = d3.timeParse("%Y");
 
@@ -78,7 +78,6 @@ export default async function worldChart(countryName) {
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom + 60)
-  // .style("background", "#111");
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -136,13 +135,13 @@ export default async function worldChart(countryName) {
             .style("top", (event.pageY - 28) + "px");
 
           d3.select(this)
-            .style("stroke-width", "4"); // Make line even thicker on hover if you want
+            .style("stroke-width", "4");
         }
       })
       .on("mouseout", function() {
         tooltip.style("opacity", 0);
         d3.select(this)
-          .style("stroke-width", "2"); // Revert back
+          .style("stroke-width", "2");
       })
       .on("mousemove", function(event) {
         tooltip
@@ -163,7 +162,6 @@ export default async function worldChart(countryName) {
       .attr("stroke-dashoffset", 0);
   });
 
-// Tooltip div
   const tooltip = d3.select("body")
     .append("div")
     .style("position", "absolute")
@@ -175,15 +173,13 @@ export default async function worldChart(countryName) {
     .style("font-size", "12px")
     .style("opacity", 0);
 
-// Add a group for the legend BELOW the chart
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`); // Position below chart
+    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`);
 
-  // One legend item per key
   seriesKeys.forEach((key, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 150}, 0)`); // Horizontally space items
+      .attr("transform", `translate(${i * 150}, 0)`);
 
     legendItem.append("rect")
       .attr("width", 12)

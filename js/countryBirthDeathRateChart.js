@@ -23,7 +23,7 @@ const processData = (countryName, data, predictions, type ="") => {
   } else {
     processedData = processedData.map((d, i, arr) => {
       if (i === 0 || d.year === 2023) {
-        return { year: d.year, value: 0 }; // no change for the first year
+        return { year: d.year, value: 0 };
       }
       const prev = arr[i - 1].value;
       const change = ((d.value - prev) / prev) * 100;
@@ -35,9 +35,9 @@ const processData = (countryName, data, predictions, type ="") => {
 };
 
 export default async function drawCountryBirthDeathRateChart(countryName) {
-  const url = `http://127.0.0.1:5000/predict/population_by_birth_death`;
+  // const url = `http://127.0.0.1:5000/predict/population_by_birth_death`;
 
-  const apiData = await fetch(`${url}/${countryName}`).then(res => res.json());
+  // const apiData = await fetch(`${url}/${countryName}`).then(res => res.json());
 
   // Load population CSVs
   const files = [
@@ -49,9 +49,9 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
     files.map(file => d3.csv(`./data/${file}`))
   );
 
-  const seriesTotal = processData(countryName, total, apiData.predictions.population, "total");
-  const seriesBirthRate = processData(countryName, birthrate, apiData.predictions.birth_rate);
-  const seriesDeathRate = processData(countryName, deathrate, apiData.predictions.death_rate);
+  const seriesTotal = processData(countryName, total, [], "total");
+  const seriesBirthRate = processData(countryName, birthrate, []);
+  const seriesDeathRate = processData(countryName, deathrate, []);
 
   const parseYear = d3.timeParse("%Y");
 
@@ -126,7 +126,7 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
       .attr("stroke-width", "2")
       .attr("d", line)
       .on("mouseover", function(event) {
-        d3.select(this).attr("stroke-width", "4"); // Highlight the line
+        d3.select(this).attr("stroke-width", "4");
         tooltip.style("opacity", 1);
       })
       .on("mousemove", function(event) {
@@ -151,11 +151,10 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
         }
       })
       .on("mouseout", function() {
-        d3.select(this).attr("stroke-width", "2"); // Remove highlight
+        d3.select(this).attr("stroke-width", "2");
         tooltip.style("opacity", 0);
       });
 
-    // Transition animation
     const totalLength = path.node().getTotalLength();
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
@@ -166,22 +165,19 @@ export default async function drawCountryBirthDeathRateChart(countryName) {
       .attr("stroke-dashoffset", 0);
   });
 
-  // Create the tooltip
   const tooltip = d3.select("#container")
     .append("div")
     .attr("class", "absolute text-xs p-2 rounded shadow opacity-0 pointer-events-none")
     .style("background", "rgba(0, 0, 0, 0.7)")
     .style("position", "absolute");
 
-// Add a group for the legend BELOW the chart
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`); // Position below chart
+    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`);
 
-  // One legend item per key
   seriesKeys.forEach((key, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 150}, 0)`); // Horizontally space items
+      .attr("transform", `translate(${i * 150}, 0)`);
 
     legendItem.append("rect")
       .attr("width", 12)

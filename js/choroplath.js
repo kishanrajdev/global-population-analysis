@@ -5,32 +5,26 @@ export default async function drawChroplath() {
   const container = document.getElementById("container");
   const width = container.offsetWidth;
   const height = container.offsetHeight;
-  // const width = 1000, height = 600;
 
   document.getElementById("pageTitle").textContent = "";
 
-// Create an SVG container
   const svg = d3.select("#container")
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
-// Define a projection and path generator
   const projection = d3.geoEqualEarth()
     .fitExtent([[0, 0], [width, height]], {type: "Sphere"});
 
   const path = d3.geoPath().projection(projection);
 
-// Define a color scale
   const colorScale =  d3.scaleDiverging(t => {
     if (t === 0.5) return "white";
     if (t < 0.5) return d3.interpolateRgb("darkred", "white")(t * 2);
     return d3.interpolateRgb("white", "green")((t - 0.5) * 2);
   })
     .domain([-4, 0, 4])
-    .clamp(true); // Clamp to prevent going beyond red/green
-
-  // d3.scaleThreshold([-4, -2, 0, 2, 4], d3.schemeRdGr[9])
+    .clamp(true);
 
   Legend({
     color: colorScale,
@@ -42,12 +36,12 @@ export default async function drawChroplath() {
   const tooltip = d3.select("#tooltip");
 
   const population = await getData();
-// Load GeoJSON or TopoJSON data
+
   d3.json("./js/countries-50m.json").then(world => {
     const countries = topojson.feature(world, world.objects.countries).features;
 
     console.log(countries);
-    // **Extract country names from available data**
+
     let countryNames = new Map(
       countries.map(d => [d.id, d.properties.name || "Unknown"])
     );
@@ -95,7 +89,6 @@ export default async function drawChroplath() {
       })
     ;
 
-    // **Add Country Names**
     svg.selectAll("text")
       .data(countries)
       .enter().append("text")
@@ -104,8 +97,7 @@ export default async function drawChroplath() {
       .attr("text-anchor", "middle")
       .style("fill", "white")
       .style("font-size", "8px")
-      .style("pointer-events", "none") // Prevents interference with clicks
-      // .text(d => countryNames.get(d.id)); // Display country names
+      .style("pointer-events", "none")
   });
 }
 

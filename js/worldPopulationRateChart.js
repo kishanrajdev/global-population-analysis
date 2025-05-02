@@ -11,7 +11,7 @@ const processData = (data, predictions, type = "") => {
   } else {
     processedData = processedData.map((d, i, arr) => {
       if (i === 0) {
-        return { year: d.year, value: 0 }; // no change for the first year
+        return { year: d.year, value: 0 };
       }
       const prev = arr[i - 1].value;
       const change = ((d.value - prev) / prev) * 100;
@@ -23,9 +23,9 @@ const processData = (data, predictions, type = "") => {
 };
 
 export default async function worldPopulationRateChart() {
-  const url = `http://127.0.0.1:5000/predict/population_by_birth_death`;
-
-  const apiData = await fetch(`${url}`).then(res => res.json());
+  // const url = `http://127.0.0.1:5000/predict/population_by_birth_death`;
+  //
+  // const apiData = await fetch(`${url}`).then(res => res.json());
 
   // Load population CSVs
   const files = [
@@ -53,9 +53,9 @@ export default async function worldPopulationRateChart() {
     )
   );
 
-  let seriesTotal = processData(total, apiData.predictions.population, "total");
-  const seriesBirthRate = processData(birthrate, apiData.predictions.birth_rate);
-  const seriesDeathRate = processData(deathrate, apiData.predictions.death_rate);
+  let seriesTotal = processData(total, [], "total");
+  const seriesBirthRate = processData(birthrate, []);
+  const seriesDeathRate = processData(deathrate, []);
 
   const parseYear = d3.timeParse("%Y");
 
@@ -143,7 +143,7 @@ export default async function worldPopulationRateChart() {
             .classed("hidden", false);
 
           d3.select(this)
-            .style("stroke-width", "4"); // Make line even thicker on hover if you want
+            .style("stroke-width", "4");
         }
       })
       .on("mousemove", function(event) {
@@ -155,30 +155,27 @@ export default async function worldPopulationRateChart() {
         tooltip.classed("hidden", true);
 
         d3.select(this)
-          .style("stroke-width", "2"); // Revert back
+          .style("stroke-width", "2");
       });
 
-    // Animate the line drawing
     const totalLength = path.node().getTotalLength();
 
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
       .attr("stroke-dashoffset", totalLength)
       .transition()
-      .duration(2000) // Animation duration (2 seconds)
+      .duration(2000)
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0);
   });
 
-// Add a group for the legend BELOW the chart
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`); // Position below chart
+    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`);
 
-  // One legend item per key
   seriesKeys.forEach((key, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 150}, 0)`); // Horizontally space items
+      .attr("transform", `translate(${i * 150}, 0)`);
 
     legendItem.append("rect")
       .attr("width", 12)
@@ -194,7 +191,6 @@ export default async function worldPopulationRateChart() {
       .text(labels[key]);
   });
 
-  // Create a tooltip div
   const tooltip = d3.select("#container")
     .append("div")
     .attr("class", "absolute text-xs p-2 rounded shadow-lg hidden")

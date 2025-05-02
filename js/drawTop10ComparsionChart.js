@@ -188,7 +188,6 @@ export default async function drawTop10ComparisonChart() {
     .attr("y", d => y(d.value))
     .attr("height", d => height - y(d.value));
 
-  // X Axis with flags and bold white text
   const xAxis = svg.append("g")
     .attr("transform", `translate(0,${height})`);
 
@@ -214,7 +213,6 @@ export default async function drawTop10ComparisonChart() {
     .attr("fill", "white")
     .text(d => d.country.length > 10 ? d.country.split(' ')[0] : d.country);
 
-  // Y Axis
   svg.append("g")
     .call(d3.axisLeft(y).tickFormat(d3.format(",")))
     .selectAll("text")
@@ -223,7 +221,6 @@ export default async function drawTop10ComparisonChart() {
     .attr("fill", "white");
 
 
-  // Legend
   const legend = svg.append("g")
     .attr("transform", `translate(${width - 220},0)`);
 

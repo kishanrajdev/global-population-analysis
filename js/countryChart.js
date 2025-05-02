@@ -24,14 +24,14 @@ const processData = (countryName, data, predictions) => {
 };
 
 export default async function drawCountryChart(countryName) {
-  const url = `http://127.0.0.1:5000/predict/total_population`;
-
-  const [apiDataAll, apiData0, apiData15, apiData65] = await Promise.all([
-    fetch(`${url}/all/${countryName}`).then(res => res.json()),
-    fetch(`${url}/0/${countryName}`).then(res => res.json()),
-    fetch(`${url}/15/${countryName}`).then(res => res.json()),
-    fetch(`${url}/65/${countryName}`).then(res => res.json()),
-  ]);
+  // const url = `http://127.0.0.1:5000/predict/total_population`;
+  //
+  // const [apiDataAll, apiData0, apiData15, apiData65] = await Promise.all([
+  //   fetch(`${url}/all/${countryName}`).then(res => res.json()),
+  //   fetch(`${url}/0/${countryName}`).then(res => res.json()),
+  //   fetch(`${url}/15/${countryName}`).then(res => res.json()),
+  //   fetch(`${url}/65/${countryName}`).then(res => res.json()),
+  // ]);
 
   // Load population CSVs
   const files = [
@@ -44,10 +44,10 @@ export default async function drawCountryChart(countryName) {
     files.map(file => d3.csv(`./data/${file}`))
   );
 
-  const seriesTotal = processData(countryName, total, apiDataAll.predictions);
-  const series0_14 = processData(countryName, age0_14, apiData0.predictions);
-  const series15_64 = processData(countryName, age15_64, apiData15.predictions);
-  const series65 = processData(countryName, age65, apiData65.predictions);
+  const seriesTotal = processData(countryName, total, []);
+  const series0_14 = processData(countryName, age0_14, []);
+  const series15_64 = processData(countryName, age15_64, []);
+  const series65 = processData(countryName, age65, []);
 
   const parseYear = d3.timeParse("%Y");
 
@@ -80,7 +80,6 @@ export default async function drawCountryChart(countryName) {
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom + 60)
-  // .style("background", "#111");
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -120,7 +119,6 @@ export default async function drawCountryChart(countryName) {
     .x(d => x(d.year))
     .y(d => y(d.value));
 
-// Draw each line with transition and add tooltip events
   seriesKeys.forEach(name => {
     const lineData = data.map(d => ({year: d.year, value: d[name]}));
     const path = g.append("path")
@@ -131,7 +129,7 @@ export default async function drawCountryChart(countryName) {
       .attr("stroke-width", "2")
       .attr("d", lineGenerator)
       .on("mouseover", function(event) {
-        d3.select(this).attr("stroke-width", "4"); // Highlight the line
+        d3.select(this).attr("stroke-width", "4");
         tooltip.style("opacity", 1);
       })
       .on("mousemove", function(event) {
@@ -156,11 +154,10 @@ export default async function drawCountryChart(countryName) {
         }
       })
       .on("mouseout", function() {
-        d3.select(this).attr("stroke-width", "2"); // Remove highlight
+        d3.select(this).attr("stroke-width", "2");
         tooltip.style("opacity", 0);
       });
 
-    // Transition animation
     const totalLength = path.node().getTotalLength();
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
@@ -171,15 +168,13 @@ export default async function drawCountryChart(countryName) {
       .attr("stroke-dashoffset", 0);
   });
 
-// Add a group for the legend BELOW the chart
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`); // Position below chart
+    .attr("transform", `translate(${margin.left}, ${height + margin.top + 40})`);
 
-  // One legend item per key
   seriesKeys.forEach((key, i) => {
     const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 150}, 0)`); // Horizontally space items
+      .attr("transform", `translate(${i * 150}, 0)`);
 
     legendItem.append("rect")
       .attr("width", 12)
